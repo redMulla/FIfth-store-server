@@ -39,11 +39,26 @@ export class UserService {
   async getUser(id: string): Promise<UserDocument> {
     // const { ObjectId } = require('mongoose');
     const objectId = new Types.ObjectId(id);
-    const user = await this.userModel.findById(objectId);
+    const user = await this.userModel
+      .findById(objectId)
+      .select('-password')
+      .exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }
     console.log(user);
     return user;
+  }
+
+  async updateUser(id: string, user: User): Promise<UserDocument> {
+    const objectId = new Types.ObjectId(id);
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(objectId, user, { new: true })
+      .select('-password')
+      .exec();
+    if (!updatedUser) {
+      throw new NotFoundException('User not updated');
+    }
+    return updatedUser;
   }
 }
