@@ -12,13 +12,13 @@ export class UserController {
 
   @Post()
   async createUser(@Body() user: any) {
-    console.log(user, 'user created');
-    return this.userService.createUser(user);
+    const newUser = await this.userService.createUser(user);
+    console.log(newUser);
   }
 
   @Get(':id')
   async name(@Param() id: string) {
-    console.log(id);
+    // console.log(id);
     return this.userService.getUser(id);
   }
 }

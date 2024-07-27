@@ -4,9 +4,10 @@ import * as bcrypt from 'bcryptjs';
 
 export type UserRole = 'admin' | 'manager' | 'staff';
 
+@Schema()
 class User {
   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  _id: string;
+  id: string;
 
   @Prop({
     type: String,

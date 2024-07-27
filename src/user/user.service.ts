@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../schema/user.schema';
 
 @Injectable()
@@ -12,14 +16,34 @@ export class UserService {
   }
 
   async createUser(user: User): Promise<UserDocument> {
+    if (!user.email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    if (!user.phone) {
+      throw new BadRequestException('Phone is required');
+    }
+
+    if (!user.password) {
+      throw new BadRequestException('Password is required');
+    }
+
+    if (!user.name) {
+      throw new BadRequestException('Name is required');
+    }
+
     const newUser = new this.userModel(user);
     return await newUser.save();
   }
 
   async getUser(id: string): Promise<UserDocument> {
-    const { ObjectId } = require('mongoose');
-    const newObectId = new ObjectId(id);
-    console.log(newObectId);
-    return await this.userModel.findById(newObectId).exec();
+    // const { ObjectId } = require('mongoose');
+    const objectId = new Types.ObjectId(id);
+    const user = await this.userModel.findById(objectId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    console.log(user);
+    return user;
   }
 }
