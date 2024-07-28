@@ -41,7 +41,7 @@ export class UserController {
     return this.userService.deleteUser(id);
   }
 
-  @Put('login')
+  @Post('login')
   async login(@Body() user: any) {
     return this.userService.login(user.email, user.password);
   }

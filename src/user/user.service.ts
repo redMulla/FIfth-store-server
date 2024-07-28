@@ -79,29 +79,30 @@ export class UserService {
     return deletedUser;
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, pass: string) {
     if (!email) {
       throw new BadRequestException('Email is required');
     }
 
-    if (!password) {
+    if (!pass) {
       throw new BadRequestException('Password is required');
     }
 
-    const user = await this.userModel
-      .findOne({ email })
-      .select('-password')
-      .exec();
+    const user = await this.userModel.findOne({ email }).exec();
 
     if (!user) {
       throw new NotFoundException('Wrong credentials');
     }
 
-    const passHash = await bcrypt.compare(password, user.password);
+    const passHash = await bcrypt.compare(pass, user.password);
+
+    console.log(passHash);
 
     if (!passHash) {
       throw new BadRequestException('Invalid password');
     }
-    return user;
+
+    const { password, ...response } = user.toJSON();
+    return response;
   }
 }
