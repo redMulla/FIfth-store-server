@@ -40,4 +40,9 @@ export class UserController {
   async deleteUser(@Param() id: string) {
     return this.userService.deleteUser(id);
   }
+
+  @Put('login')
+  async login(@Body() user: any) {
+    return this.userService.login(user.email, user.password);
+  }
 }

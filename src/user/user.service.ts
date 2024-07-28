@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import * as bcrypt from 'bcryptjs';
 import { User, UserDocument } from '../schema/user.schema';
 
 @Injectable()
@@ -30,6 +31,13 @@ export class UserService {
 
     if (!user.name) {
       throw new BadRequestException('Name is required');
+    }
+
+    const existingUser = await this.userModel
+      .findOne({ $or: [{ email: user.email }, { phone: user.phone }] })
+      .exec();
+    if (existingUser) {
+      throw new BadRequestException('Phone or email already exists');
     }
 
     const newUser = new this.userModel(user);
@@ -69,5 +77,31 @@ export class UserService {
       throw new NotFoundException('User not deleted');
     }
     return deletedUser;
+  }
+
+  async login(email: string, password: string) {
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    if (!password) {
+      throw new BadRequestException('Password is required');
+    }
+
+    const user = await this.userModel
+      .findOne({ email })
+      .select('-password')
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException('Wrong credentials');
+    }
+
+    const passHash = await bcrypt.compare(password, user.password);
+
+    if (!passHash) {
+      throw new BadRequestException('Invalid password');
+    }
+    return user;
   }
 }
