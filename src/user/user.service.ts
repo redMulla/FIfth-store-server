@@ -61,4 +61,13 @@ export class UserService {
     }
     return updatedUser;
   }
+
+  async deleteUser(id: string) {
+    const objectId = new Types.ObjectId(id);
+    const deletedUser = await this.userModel.findByIdAndDelete(objectId).exec();
+    if (!deletedUser) {
+      throw new NotFoundException('User not deleted');
+    }
+    return deletedUser;
+  }
 }
