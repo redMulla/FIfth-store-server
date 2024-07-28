@@ -13,10 +13,10 @@ export class UserService {
   constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
 
   async findUsers(): Promise<UserDocument[]> {
-    return await this.userModel.find().exec();
+    return await this.userModel.find().select('-password').exec();
   }
 
-  async createUser(user: User): Promise<UserDocument> {
+  async createUser(user: User) {
     if (!user.email) {
       throw new BadRequestException('Email is required');
     }
@@ -35,13 +35,17 @@ export class UserService {
 
     const existingUser = await this.userModel
       .findOne({ $or: [{ email: user.email }, { phone: user.phone }] })
+      .select('-password')
       .exec();
     if (existingUser) {
       throw new BadRequestException('Phone or email already exists');
     }
 
-    const newUser = new this.userModel(user);
-    return await newUser.save();
+    const newUser = await new this.userModel(user).save();
+
+    const { password, ...result } = newUser.toJSON();
+
+    return result;
   }
 
   async getUser(id: string): Promise<UserDocument> {
@@ -76,7 +80,10 @@ export class UserService {
     if (!deletedUser) {
       throw new NotFoundException('User not deleted');
     }
-    return deletedUser;
+
+    const { password, ...result } = deletedUser.toJSON();
+
+    return result;
   }
 
   async login(email: string, pass: string) {
