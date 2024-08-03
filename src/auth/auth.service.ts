@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
@@ -27,9 +29,12 @@ export class AuthService {
     }
 
     const { password, ...result } = user.toJSON();
-    const payload = { sub: user.id, username: user.email };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    // return {
+    //   access_token: await this.jwtService.signAsync(payload),
+    // };
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    return accessToken;
   }
 }
