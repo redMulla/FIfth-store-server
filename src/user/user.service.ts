@@ -62,6 +62,14 @@ export class UserService {
     return user;
   }
 
+  async getUserByMail(email: string): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
   async updateUser(id: string, user: User): Promise<UserDocument> {
     const objectId = new Types.ObjectId(id);
     const updatedUser = await this.userModel
@@ -84,6 +92,12 @@ export class UserService {
     const { password, ...result } = deletedUser.toJSON();
 
     return result;
+  }
+
+  async checkPassword(user: UserDocument, pass: string): Promise<boolean> {
+    const fullUser = await this.userModel.findOne({ email: user.email });
+
+    return await bcrypt.compare(pass, fullUser.password);
   }
 
   async login(email: string, pass: string) {

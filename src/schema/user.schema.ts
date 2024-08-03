@@ -11,7 +11,7 @@ class User {
 
   @Prop({
     type: String,
-    enum: ['admin', 'manager', 'staff'],
+    enum: ['admin', 'manager', 'staff', 'superadmin'],
     required: true,
     default: 'staff',
   })
