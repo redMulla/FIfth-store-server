@@ -11,6 +11,7 @@ import {
 import { UserService } from './user.service';
 import { User } from '../schema/user.schema';
 import { AuthGuard } from '../auth/auth.guard';
+import { AdminAuthGuard } from '../admin-auth/admin-auth.guard';
 
 @Controller('users')
 @UseGuards(AuthGuard)
@@ -18,11 +19,13 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
+  @UseGuards(AdminAuthGuard)
   async getUsers() {
     return this.userService.findUsers();
   }
 
   @Post()
+  @UseGuards(AdminAuthGuard)
   async createUser(@Body() user: any) {
     const newUser = await this.userService.createUser(user);
     return newUser;
@@ -40,6 +43,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminAuthGuard)
   async deleteUser(@Param() id: string) {
     return this.userService.deleteUser(id);
   }
