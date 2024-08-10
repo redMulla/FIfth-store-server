@@ -19,12 +19,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(@Body() signInDto: any) {
-    const accessToken = await this.authService.signIn(
+    const { user, accessToken } = await this.authService.signIn(
       signInDto.email,
       signInDto.password,
     );
     return {
       accessToken,
+      user,
     };
   }
 

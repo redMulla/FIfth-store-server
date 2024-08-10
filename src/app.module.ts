@@ -6,10 +6,11 @@ import { UserModule } from './user/user.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { ProductsModule } from './products/products.module';
 require('dotenv').config();
 
 @Module({
-  imports: [MongooseModule.forRoot(process.env.DB_URL), UserModule, AuthModule],
+  imports: [MongooseModule.forRoot(process.env.DB_URL), UserModule, AuthModule, ProductsModule],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
